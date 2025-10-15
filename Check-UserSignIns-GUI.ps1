@@ -1,6 +1,63 @@
 # Azure AD Sign-in Checker Script with GUI
 # This script provides a GUI to either read email addresses from a CSV file or from a Microsoft 365 Group,
 # checks their last sign-in time in Azure AD, and exports the results to a new CSV file with customizable day analysis.
+#
+# QUICK START:
+# 1. Right-click this file and select "Run with PowerShell" OR
+# 2. Double-click "Run-SignInChecker.bat" for easier execution OR  
+# 3. Use the desktop shortcut (run Create-DesktopShortcut.ps1 first)
+#
+# Required: Azure AD Premium P1/P2 license and Reports Reader role or higher
+
+# Check if running with restricted execution policy and offer to fix it
+$currentPolicy = Get-ExecutionPolicy
+if ($currentPolicy -eq 'Restricted') {
+    Add-Type -AssemblyName System.Windows.Forms -ErrorAction SilentlyContinue
+    $policyMessage = @"
+PowerShell Execution Policy Restriction Detected
+
+Current policy: $currentPolicy
+
+This script cannot run with the current execution policy. 
+
+Options:
+• Click 'Yes' to run with bypassed policy (recommended)
+• Click 'No' to exit and manually change policy
+• Click 'Cancel' for more information
+
+To permanently fix this, run as Administrator:
+Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope LocalMachine
+"@
+    
+    $result = [System.Windows.Forms.MessageBox]::Show($policyMessage, "Execution Policy Issue", [System.Windows.Forms.MessageBoxButtons]::YesNoCancel, [System.Windows.Forms.MessageBoxIcon]::Warning)
+    
+    if ($result -eq [System.Windows.Forms.DialogResult]::Yes) {
+        # Restart with bypass policy
+        $scriptPath = $MyInvocation.MyCommand.Path
+        Start-Process powershell.exe -ArgumentList "-ExecutionPolicy", "Bypass", "-File", "`"$scriptPath`"" -WindowStyle Hidden
+        exit 0
+    }
+    elseif ($result -eq [System.Windows.Forms.DialogResult]::Cancel) {
+        $infoMessage = @"
+PowerShell Execution Policy Information
+
+The execution policy is a security feature that controls script execution.
+
+To fix this permanently (run as Administrator):
+• Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope LocalMachine
+
+Alternative ways to run this script:
+• Use the Run-SignInChecker.bat file
+• Run: powershell.exe -ExecutionPolicy Bypass -File "Check-UserSignIns-GUI.ps1"
+• Right-click the .ps1 file and select "Run with PowerShell"
+
+For more info: Get-Help about_Execution_Policies
+"@
+        [System.Windows.Forms.MessageBox]::Show($infoMessage, "Execution Policy Help", [System.Windows.Forms.MessageBoxButtons]::OK, [System.Windows.Forms.MessageBoxIcon]::Information)
+    }
+    
+    exit 0
+}
 
 # Set error handling preferences
 $ErrorActionPreference = "Continue"  # GUI scripts need different error handling
