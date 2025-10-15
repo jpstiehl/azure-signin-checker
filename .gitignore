@@ -1,0 +1,32 @@
+# PowerShell execution policy files
+*.ps1xml
+
+# Output files
+SignInResults.csv
+*Results*.csv
+
+# Test files
+quick-test.csv
+test-input.csv
+
+# Temporary files
+*.tmp
+*.temp
+
+# Windows files
+Thumbs.db
+Desktop.ini
+
+# VS Code files
+.vscode/
+
+# Log files
+*.log
+
+# Backup files
+*.bak
+*~
+
+# Personal data files (keep sample files but exclude real data)
+# Uncomment the next line if you have sensitive data files
+# *.csv
